@@ -5,15 +5,13 @@ import requests
 import os
 import sys
 
-# Carrega variáveis do .env
-load_dotenv()
-
 app = Flask(__name__)
 
-# Conecta ao MongoDB
+load_dotenv()
 client = MongoClient(os.getenv("MONGO_URI"))
-db = client["chatbot"]
+db = client["henryleo"]
 mensagens = db["mensagens"]
+
 
 @app.route("/webhook", methods=["POST"])
 def webhook():
@@ -56,10 +54,17 @@ def gerar_resposta_ia(mensagens):
             }
         )
         data = response.json()
+
+        if "choices" not in data or not data["choices"]:
+            print("⚠️ Resposta inesperada da OpenRouter:", data)
+            return "Desculpe, a IA não retornou uma resposta válida."
+
         return data["choices"][0]["message"]["content"].strip()
+
     except Exception as e:
         print(f"❌ Erro com a OpenRouter: {e}")
         return "Desculpe, houve um problema técnico. Tente novamente."
+
 
 def enviar_resposta_whatsapp(phone, text):
     try:

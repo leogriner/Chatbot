@@ -1,1 +1,1 @@
-web: gunicorn app:app
+web: gunicorn app:app -w 2 -k gthread --threads 4 --timeout 60 --graceful-timeout 30 --keep-alive 30
